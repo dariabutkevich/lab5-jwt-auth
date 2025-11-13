@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab 5</title>
+</head>
+
+<body>
+    <!-- <button id="check-api">click to show data</button>
+    <h1></h1> -->
+    <p id="status-message" >Нажмите, чтобы проверить статус API.</p>
+
+    <button id="check-api"> Проверить API (порт 8080)</button>
+    
+    <div id="api-result" >
+        <h2 >Ответ сервера:</h2>
+        <pre id="result-json" ></pre>
+    </div>
+    <script>
+        document.querySelector('#check-api').addEventListener('click', () => {
+            const resultDiv = document.querySelector('#api-result');
+            const resultJson = document.querySelector('#result-json');
+            const statusMessage = document.querySelector('#status-message');
+
+            statusMessage.textContent = 'Подключение к API...';
+            resultDiv.classList.add('hidden');
+            resultJson.textContent = 'Загрузка...';
+
+            fetch('http://localhost:8080/')
+                .then(response => {
+                    statusMessage.textContent = `Статус: ${response.status} ${response.statusText}`;
+                    return response.json();
+                })
+                .then(data => {
+                    resultJson.textContent = JSON.stringify(data, null, 2);
+                    resultDiv.classList.remove('hidden');
+                })
+                .catch(error => {
+                    statusMessage.textContent = `Ошибка: Не удалось подключиться к API. Убедитесь, что сервер Node.js запущен на http://localhost:8080.`;
+                    resultJson.textContent = JSON.stringify({ error: error.message, details: 'API недоступно.' }, null, 2);
+                    resultDiv.classList.remove('hidden');
+                });
+        });
+    </script>
+</body>
+
+</html>
