@@ -1,0 +1,87 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: 12465067
+          POSTGRES_DB: test_lab5db_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run unit tests
+      run: npm run test:unit
+      env:
+        NODE_ENV: test
+
+    - name: Run integration tests
+      run: npm run test:integration
+      env:
+        NODE_ENV: test
+        DB_HOST: localhost
+        DB_PORT: 5432
+        DB_USER: postgres
+        DB_PASSWORD: 12465067
+        DB_NAME: test_lab5db_test
+
+  deploy-staging:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Deploy to Render Staging
+      run: |
+        curl -X POST https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_STAGING }}/deploys \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          -d '{"branch": "main"}'
+      env:
+        NODE_ENV: staging
+
+  deploy-prod:
+    needs: deploy-staging
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Deploy to Render Prod
+      run: |
+        curl -X POST https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          -d '{"branch": "main"}'
+      env:
+        NODE_ENV: production
+
+  monitor:
+    needs: deploy-prod
+    runs-on: ubuntu-latest
+    steps:
+    - name: Health Check
+      run: curl -f https://your-app-staging.onrender.com/ || exit 1 
+    - name: Monitor
+      run: echo "Check Render dashboard: errors=0, load<50%"
