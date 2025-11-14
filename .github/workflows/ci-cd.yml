@@ -8,6 +8,11 @@ on:
       types: [opened, synchronize, reopened]
   workflow_dispatch:
 
+permissions:
+  contents: read    # Для checkout кода
+  pages: write      # Для деплоя на GitHub Pages
+  id-token: write   # Для OIDC-токена (исправляет вашу ошибку)
+  
 jobs:
   # 1. Сборка и Автоматическое Юнит/Интеграционное Тестирование (CI)
   build_and_test:
