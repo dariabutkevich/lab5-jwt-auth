@@ -3,7 +3,9 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ master ]
-  # Разрешает ручной запуск workflow
+    pull_request:
+      branches: [ master ]
+      types: [opened, synchronize, reopened]
   workflow_dispatch:
 
 jobs:
