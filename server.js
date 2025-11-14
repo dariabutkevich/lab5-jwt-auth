@@ -118,11 +118,32 @@ app.use((err, req, res, next) => {
 
 module.exports = app;
 
+// if (require.main === module) {
+//   const PORT = process.env.PORT || 8080;
+//   app.listen(PORT, () => {
+//     console.log(`Server is running on port ${PORT}.`);
+//   });
+// }
 if (require.main === module) {
   const PORT = process.env.PORT || 8080;
-  app.listen(PORT, () => {
+  app.listen(PORT, '0.0.0.0', () => {  // <-- Добавь '0.0.0.0' явно (все интерфейсы)
     console.log(`Server is running on port ${PORT}.`);
   });
+
+  // DB sync ПОСЛЕ listen (async, с try-catch)
+  const db = require("./app/models");
+  const Role = db.role;
+  if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+    db.sequelize.sync({ force: true }).then(() => {
+      console.log('Drop and Resync Database (dev/test only)');
+      initial();
+    }).catch(err => {
+      console.error('DB Sync failed:', err.message);  // Лог, но не краш
+    });
+  } else {
+    console.log('Production: DB connected (migrations via post-deploy)');
+    // Здесь можно lazy-connect, если нужно
+  }
 }
 
 function initial() {
