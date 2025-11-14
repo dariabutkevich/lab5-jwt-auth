@@ -9,9 +9,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  # =======================================================================
   # 1. Сборка и Автоматическое Юнит/Интеграционное Тестирование (CI)
-  # =======================================================================
   build_and_test:
     name: Build & Run Tests (CI)
     runs-on: ubuntu-latest
@@ -40,26 +38,26 @@ jobs:
           --health-retries 5
           
     steps:
-      - name: 📦 Checkout Code
+      - name:  Checkout Code
         uses: actions/checkout@v4
         
-      - name: ⚙️ Setup Node.js 20
+      - name:  Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: ⏱️ Wait for PostgreSQL to be ready
+      - name:  Wait for PostgreSQL to be ready
         # Ожидаем, пока БД станет доступна
         run: while ! pg_isready -h ${{ env.DB_HOST }} -p ${{ env.DB_PORT }}; do sleep 1; done
         
-      - name: ⬇️ Install Dependencies
+      - name: ⬇ Install Dependencies
         run: npm ci
 
-      - name: 🧪 Run Tests (Unit & Integration)
+      - name:  Run Tests (Unit & Integration)
         # Запуск юнит-тестов (auth.unit.test.js) и интеграционных тестов (auth.test.js, server.test.js)
         run: npm test
 
-      - name: 🏗️ Build Static Files (npm run build)
+      - name:  Build Static Files (npm run build)
         # Подготовка index.html и других статических файлов для деплоя
         run: npm run build
 
@@ -70,9 +68,7 @@ jobs:
           name: deployment-artifact
           path: public/
           
-  # =======================================================================
   # 2. Развертывание в тестовом окружении (Staging)
-  # =======================================================================
   staging_deploy:
     name: Deploy to Staging
     needs: build_and_test # Зависит от успешного прохождения тестов
@@ -84,22 +80,20 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: ⬇️ Download Artifact
+      - name: ⬇ Download Artifact
         uses: actions/download-artifact@v4
         with:
           name: deployment-artifact
           path: public/
           
-      - name: 🚀 Deploy to GitHub Pages (Staging)
+      - name:  Deploy to GitHub Pages (Staging)
         id: deployment
         uses: actions/deploy-pages@v4 # Развертывание на GitHub Pages
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target_directory: public
           
-  # =======================================================================
   # 3. Деплой в продакшн (Production)
-  # =======================================================================
   production_deploy:
     name: Deploy to Production
     needs: staging_deploy # Зависит от успешного деплоя на Staging
@@ -119,128 +113,9 @@ jobs:
           name: deployment-artifact
           path: public/
           
-      - name: 🚀 Deploy to GitHub Pages (Production)
+      - name:  Deploy to GitHub Pages (Production)
         id: deployment
         uses: actions/deploy-pages@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           target_directory: public
-# name: CI/CD Pipeline
-
-# on:
-#   push:
-#     branches: [ master ]
-#   # Разрешает ручной запуск workflow
-#   workflow_dispatch:
-
-# jobs:
-#   # 1. Сборка и Автоматическое Юнит/Интеграционное Тестирование (CI)
-#   build_and_test:
-#     name: Build & Run Tests (CI)
-#     runs-on: ubuntu-latest
-    
-#     # Переменные окружения для подключения к тестовой БД
-#     env:
-#       DB_NAME: test_lab5db_test
-#       DB_USER: postgres
-#       DB_PASS: 12465067
-#       DB_HOST: localhost
-#       DB_PORT: 5432
-
-#     # Настройка сервиса PostgreSQL для интеграционных тестов
-#     services:
-#       postgres:
-#         image: postgres:13
-#         env:
-#           POSTGRES_PASSWORD: ${{ env.DB_PASS }}
-#           POSTGRES_DB: ${{ env.DB_NAME }}
-#         ports:
-#           - 5432:5432
-#         options: >-
-#           --health-cmd pg_isready
-#           --health-interval 10s
-#           --health-timeout 5s
-#           --health-retries 5
-          
-#     steps:
-#       - name: 📦 Checkout Code
-#         uses: actions/checkout@v4
-        
-#       - name: ⚙️ Setup Node.js 20
-#         uses: actions/setup-node@v4
-#         with:
-#           node-version: '20'
-
-#       - name: ⏱️ Wait for PostgreSQL to be ready
-#         # Ожидаем, пока БД станет доступна
-#         run: while ! pg_isready -h ${{ env.DB_HOST }} -p ${{ env.DB_PORT }}; do sleep 1; done
-        
-#       - name: ⬇️ Install Dependencies
-#         run: npm ci
-
-#       - name: 🧪 Run Tests (Unit & Integration)
-#         # Запуск юнит-тестов (auth.unit.test.js) и интеграционных тестов (auth.test.js, server.test.js)
-#         run: npm test
-
-#       - name: 🏗️ Build Static Files (npm run build)
-#         # Подготовка index.html и других статических файлов для деплоя
-#         run: npm run build
-
-#       - name: ⬆️ Upload Build Artifact
-#         # Сохраняем собранные файлы (папка public/) для деплоя на следующих шагах
-#         uses: actions/upload-artifact@v4
-#         with:
-#           name: deployment-artifact
-#           path: public/
-          
-#   # 2. Развертывание в тестовом окружении (Staging)
-#   staging_deploy:
-#     name: Deploy to Staging
-#     needs: build_and_test # Зависит от успешного прохождения тестов
-#     runs-on: ubuntu-latest
-    
-#     # Используем среду Staging (нужно настроить в GitHub)
-#     environment: 
-#       name: Staging 
-#       url: ${{ steps.deployment.outputs.page_url }}
-
-#     steps:
-#       - name: ⬇️ Download Artifact
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: deployment-artifact
-#           path: public/
-          
-#       - name: 🚀 Deploy to GitHub Pages (Staging)
-#         id: deployment
-#         uses: actions/deploy-pages@v4 # Развертывание на GitHub Pages
-#         with:
-#           token: ${{ secrets.GITHUB_TOKEN }}
-#           target_directory: public
-          
-#   # 3. Деплой в продакшн (Production)
-#   production_deploy:
-#     name: Deploy to Production
-#     needs: staging_deploy # Зависит от успешного деплоя на Staging
-#     # Условие: запускается только если все предыдущие job'ы успешны
-#     if: success() 
-#     runs-on: ubuntu-latest
-    
-#     # Используем среду Production (рекомендуется настроить ручное одобрение)
-#     environment: 
-#       name: Production 
-#       url: ${{ steps.deployment.outputs.page_url }}
-      
-#     steps:
-#       - name: ⬇️ Download Artifact
-#         uses: actions/download-artifact@v4
-#         with:
-#           name: deployment-artifact
-#           path: public/
-          
-#       - name: 🚀 Deploy to GitHub Pages (Production)
-#         id: deployment
-#         uses: actions/deploy-pages@v4
-#         with:
-#           token: ${{ secrets.GITHUB_TOKEN }}
-#           target_directory: public
