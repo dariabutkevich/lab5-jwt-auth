@@ -95,14 +95,36 @@ const Role = db.role;
 //     initial();
 //   });
 // }
-if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
-  db.sequelize.sync({ force: true }).then(() => {
-    console.log('Drop and Resync Database with { force: true } (dev/test only)');
-    initial();
-  });
-} else {
-  console.log('Production mode: DB connected without sync (use migrations)');
-}
+
+  if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+    console.log('Dev/Test: Syncing DB...');
+    db.sequelize.sync({ force: true }).then(() => {
+      initial();
+    }).catch(err => {
+      console.error('DB Sync failed:', err.message);
+    });
+  } else {
+    console.log('Production: DB connected (migrations via post-deploy)');
+  }
+
+// if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+//   db.sequelize.sync({ force: true }).then(() => {
+//     initial();  // Только initial, без log
+//   }).catch(err => {
+//     console.error('DB Sync failed:', err.message);  // Log только в error
+//   });
+// } else {
+//   console.log('Production: DB connected (migrations via post-deploy)');
+// }
+
+// if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') {
+//   db.sequelize.sync({ force: true }).then(() => {
+//     console.log('Drop and Resync Database with { force: true } (dev/test only)');
+//     initial();
+//   });
+// } else {
+//   console.log('Production mode: DB connected without sync (use migrations)');
+// }
 
 app.get("/", (req, res) => {
   res.json({ message: "Test lab 5!" });

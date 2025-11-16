@@ -58,6 +58,11 @@ jobs:
       - name:  Install Dependencies
         run: npm ci
 
+      - name: Run Migrations
+        run: npx sequelize-cli db:migrate
+      - name: Run Seed
+        run: npx sequelize-cli db:seed:all
+
       - name:  Run Tests (Unit & Integration)
         # Запуск юнит-тестов (auth.unit.test.js) и интеграционных тестов (auth.test.js, server.test.js)
         run: npm test

@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "npx cross-env NODE_ENV=test npx jest --config jest.config.js --runInBand --detectOpenHandles",
+    "test": "npx cross-env NODE_ENV=test npx jest --config jest.config.js --runInBand --detectOpenHandles --silent",
     "test:unit": "npx cross-env NODE_ENV=test npx jest tests/unit --config jest.config.js",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "test:integration": "npx cross-env NODE_ENV=test npx jest tests/integration --config jest.config.js",
