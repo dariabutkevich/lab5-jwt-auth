@@ -65,7 +65,6 @@ jobs:
         with:
           name: deployment-artifact
           path: public/
-          
   # 2. Развертывание в тестовом окружении (Staging)
   staging_deploy:
     name: Deploy to Staging
