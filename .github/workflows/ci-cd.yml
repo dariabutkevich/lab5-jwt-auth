@@ -3,8 +3,15 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ master ]
-  # Разрешает ручной запуск workflow
+    pull_request:
+      branches: [ master ]
+      types: [opened, synchronize, reopened]
   workflow_dispatch:
+
+permissions:
+  contents: read    # Для checkout кода
+  pages: write      # Для деплоя на GitHub Pages
+  id-token: write   # Для OIDC-токена (исправляет вашу ошибку)
 
 jobs:
   # 1. Сборка и Автоматическое Юнит/Интеграционное Тестирование (CI)
@@ -36,30 +43,30 @@ jobs:
           --health-retries 5
           
     steps:
-      - name: 📦 Checkout Code
+      - name:  Checkout Code
         uses: actions/checkout@v4
         
-      - name: ⚙️ Setup Node.js 20
+      - name:  Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      - name: ⏱️ Wait for PostgreSQL to be ready
+      - name:  Wait for PostgreSQL to be ready
         # Ожидаем, пока БД станет доступна
         run: while ! pg_isready -h ${{ env.DB_HOST }} -p ${{ env.DB_PORT }}; do sleep 1; done
         
-      - name: ⬇️ Install Dependencies
+      - name:  Install Dependencies
         run: npm ci
 
-      - name: 🧪 Run Tests (Unit & Integration)
+      - name:  Run Tests (Unit & Integration)
         # Запуск юнит-тестов (auth.unit.test.js) и интеграционных тестов (auth.test.js, server.test.js)
         run: npm test
 
-      - name: 🏗️ Build Static Files (npm run build)
+      - name:  Build Static Files (npm run build)
         # Подготовка index.html и других статических файлов для деплоя
         run: npm run build
 
-      - name: ⬆️ Upload Build Artifact
+      - name:  Upload Build Artifact
         # Сохраняем собранные файлы (папка public/) для деплоя на следующих шагах
         uses: actions/upload-artifact@v4
         with:
@@ -77,18 +84,18 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: ⬇️ Download Artifact
+      - name:  Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: deployment-artifact
-          path: public/
+          name: github-pages # deployment-artifact
+          path: . #public/
           
-      - name: 🚀 Deploy to GitHub Pages (Staging)
+      - name:  Deploy to GitHub Pages (Staging)
         id: deployment
         uses: actions/deploy-pages@v4 # Развертывание на GitHub Pages
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          target_directory: public
+          artifact_name: github-pages # target_directory: public
           
   # 3. Деплой в продакшн (Production)
   production_deploy:
@@ -104,124 +111,15 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
       
     steps:
-      - name: ⬇️ Download Artifact
+      - name:  Download Artifact
         uses: actions/download-artifact@v4
         with:
-          name: deployment-artifact
-          path: public/
+          name: github-pages #deployment-artifact
+          path: . #public/
           
-      - name: 🚀 Deploy to GitHub Pages (Production)
+      - name:  Deploy to GitHub Pages (Production)
         id: deployment
         uses: actions/deploy-pages@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          target_directory: public
-# name: CI/CD Pipeline
-
-# on:
-#   push:
-#     branches: [ master ]
-# jobs:
-#   lint:
-#     runs-on: ubuntu-latest
-#     services:
-#       postgres:
-#         image: postgres:13
-#         env:
-#           POSTGRES_PASSWORD: 12465067
-#           POSTGRES_DB: test_lab5db_test
-#         ports:
-#           - 5432:5432
-#         options: >-
-#           --health-cmd pg_isready
-#           --health-interval 10s
-#           --health-timeout 5s
-#           --health-retries 5
-#     steps:
-#       - name:  Checkout
-#         uses: actions/checkout@v4
-#       - name: Install deps
-#         run: npm ci
-#       - name: Lint
-#         run: npm run lint
-# jobs:
-#   test:
-#     runs-on: ubuntu-latest
-#     services:
-#       postgres:
-#         image: postgres:13
-#         env:
-#           POSTGRES_PASSWORD: 12465067
-#           POSTGRES_DB: test_lab5db_test
-#         ports:
-#           - 5432:5432
-#         options: >-
-#           --health-cmd pg_isready
-#           --health-interval 10s
-#           --health-timeout 5s
-#           --health-retries 5
-
-#     steps:
-#     - uses: actions/checkout@v4
-
-#     - name: Use Node.js
-#       uses: actions/setup-node@v4
-#       with:
-#         node-version: '18'
-#         cache: 'npm'
-
-#     - name: Install dependencies
-#       run: npm ci
-
-#     - name: Run unit tests
-#       run: npm run test:unit
-#       env:
-#         NODE_ENV: test
-
-#     - name: Run integration tests
-#       run: npm run test:integration
-#       env:
-#         NODE_ENV: test
-#         DB_HOST: localhost
-#         DB_PORT: 5432
-#         DB_USER: postgres
-#         DB_PASSWORD: 12465067
-#         DB_NAME: test_lab5db_test
-
-#   deploy-staging:
-#     needs: test
-#     runs-on: ubuntu-latest
-#     if: github.ref == 'refs/heads/main'
-#     steps:
-#     - uses: actions/checkout@v4
-
-#     - name: Deploy to Render Staging
-#       run: |
-#         curl -X POST https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_STAGING }}/deploys \
-#           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-#           -d '{"branch": "main"}'
-#       env:
-#         NODE_ENV: staging
-
-#   deploy-prod:
-#     needs: deploy-staging
-#     runs-on: ubuntu-latest
-#     steps:
-#     - uses: actions/checkout@v4
-
-#     - name: Deploy to Render Prod
-#       run: |
-#         curl -X POST https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID_PROD }}/deploys \
-#           -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
-#           -d '{"branch": "main"}'
-#       env:
-#         NODE_ENV: production
-
-#   monitor:
-#     needs: deploy-prod
-#     runs-on: ubuntu-latest
-#     steps:
-#     # - name: Health Check
-#     #   run: curl -f https://your-app-staging.onrender.com/ || exit 1 
-#     - name: Monitor
-#       run: echo "Check Render dashboard: errors=0, load<50%"
+          artifact_name: github-pages #target_directory: public
