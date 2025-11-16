@@ -26,7 +26,7 @@
             resultDiv.classList.add('hidden');
             resultJson.textContent = 'Загрузка...';
 
-            fetch('http://localhost:8080/')
+            fetch('https://lab5-jwt-auth-1.onrender.com')
                 .then(response => {
                     statusMessage.textContent = `Статус: ${response.status} ${response.statusText}`;
                     return response.json();
