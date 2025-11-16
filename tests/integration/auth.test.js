@@ -100,6 +100,9 @@
 //     expect(res.body).toHaveProperty('message', 'Refresh Token is required!');
 //   });
 // });
+
+
+
 // SAMOST' ПЕРВАЯ СТРОКА: Mock nodemailer (hoisted by Jest, applies before any require)
 jest.mock('nodemailer', () => ({
     createTransport: jest.fn(() => ({
@@ -108,26 +111,86 @@ jest.mock('nodemailer', () => ({
   }));
   
   const request = require('supertest');
-  const app = require('../../server');  // Теперь мок применяется перед этим require
+  const app = require('../../server');  
   const db = require('../../app/models'); 
   
   let server;
+  describe('Auth Controller Integration Tests', () => {
+    // beforeAll(async () => {
+    //   // Disable Sequelize logs (убирает "Executing" spam)
+    //   const originalLog = db.sequelize.options.logging;
+    //   db.sequelize.options.logging = false;
   
+    //   // Drop all tables + sync (чистая БД для тестов)
+    //   await db.sequelize.drop();  // Дропает всё
+    //   await db.sequelize.sync({ force: true });  // Пересоздаёт
+    //   console.log('DB dropped and synced for tests');
+  
+    //   // Create roles
+    //   const Role = db.role;
+    //   await Role.create({ id: 1, name: "user" });
+    //   await Role.create({ id: 2, name: "admin" });
+  
+    //   // Start server
+    //   server = app.listen(0, 'localhost', () => {
+    //     console.log('Test server started');
+    //   });
+  
+    //   // Restore logging
+    //   db.sequelize.options.logging = originalLog;
+    // });
+
   beforeAll(async () => {
-    await db.sequelize.sync({ force: true });
+      // Disable ALL Sequelize logging (убирает "Executing" spam)
+      db.sequelize.options.logging = false;  // Глобально для этого sequelize instance
     
-    // Create roles (fix for setRoles([1]))
-    const Role = db.role;
-    await Role.create({ id: 1, name: 'user' });
-    await Role.create({ id: 2, name: 'admin' });
+      // Drop + sync (чистая БД)
+      await db.sequelize.drop();
+      await db.sequelize.sync({ force: true });
+      console.log('DB dropped and synced for tests');
     
-    server = app.listen(0);
-  }, 60000);
+      // Create roles
+      const Role = db.role;
+      await Role.create({ id: 1, name: "user" });
+      await Role.create({ id: 2, name: "admin" });
+    
+      // Start server
+      server = app.listen(0, 'localhost', () => {
+        console.log('Test server started');
+      });
+  });
+
+  // beforeAll(async () => {
+  //   // Suppress Sequelize logs in tests (убирает "Executing" spam)
+  //   const originalLog = db.sequelize.options.logging;
+  //   db.sequelize.options.logging = false;  // Выключаем логи SQL
   
+  //   // Sync с alter: true (обновляет схему, не стирает таблицы — решает "relation exists")
+  //   await db.sequelize.sync({ alter: true });
+  //   console.log('DB synced for tests');
+  
+  //   // Create roles
+  //   const Role = db.role;
+  //   await Role.create({ id: 1, name: "user" });
+  //   await Role.create({ id: 2, name: "admin" });
+  
+  //   // Restore logs
+  //   db.sequelize.options.logging = originalLog;
+  // });
+  
+  // afterAll — увеличь timeout
+  // afterAll(async () => {
+  //   await new Promise(resolve => server.close(resolve));
+  //   await db.sequelize.close();
+  // }, 15000);  // 15s timeout
   afterAll(async () => {
-    await new Promise(resolve => server.close(resolve));
-    await db.sequelize.close(); 
-  }, 60000);
+      // Close server and DB (увеличь timeout)
+      if (server) {
+        await new Promise(resolve => server.close(resolve));
+      }
+      await db.sequelize.close();
+  }, 20000);
+  
   
   describe('Auth Controller Integration Tests', () => {
     const testUser = {
@@ -222,3 +285,4 @@ jest.mock('nodemailer', () => ({
       expect(res.body).toHaveProperty('message', 'Refresh Token is required!');
     }, 30000);
   });
+});

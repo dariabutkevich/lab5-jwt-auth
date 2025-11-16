@@ -5,13 +5,14 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "npx cross-env NODE_ENV=test npx jest --config jest.config.js --runInBand --detectOpenHandles",
+    "test": "npx cross-env NODE_ENV=test npx jest --config jest.config.js --runInBand --detectOpenHandles --silent",
     "test:unit": "npx cross-env NODE_ENV=test npx jest tests/unit --config jest.config.js",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "test:integration": "npx cross-env NODE_ENV=test npx jest tests/integration --config jest.config.js",
-    "migrate": "npx sequelize-cli db:migrate",
+    "migrate": "npx sequelize-cli db:migrate knex migrate:latest",
     "migrate:undo": "npx sequelize-cli db:migrate:undo:all",
-    "seed": "npx sequelize-cli db:seed:all"
+    "seed": "npx sequelize-cli db:seed:all knex seed:run",
+    "build": "node build.js"
   },
   "keywords": [],
   "author": "",
