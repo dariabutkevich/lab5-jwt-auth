@@ -9,9 +9,9 @@
     "test:unit": "npx cross-env NODE_ENV=test npx jest tests/unit --config jest.config.js",
     "test:watch": "cross-env NODE_ENV=test jest --watch",
     "test:integration": "npx cross-env NODE_ENV=test npx jest tests/integration --config jest.config.js",
-    "migrate": "npx sequelize-cli db:migrate knex migrate:latest",
+    "migrate": "npx sequelize-cli db:migrate",  
     "migrate:undo": "npx sequelize-cli db:migrate:undo:all",
-    "seed": "npx sequelize-cli db:seed:all knex seed:run",
+    "seed": "npx sequelize-cli db:seed:all",
     "build": "node build.js"
   },
   "keywords": [],
