@@ -12,7 +12,8 @@
     "migrate": "npx sequelize-cli db:migrate",  
     "migrate:undo": "npx sequelize-cli db:migrate:undo:all",
     "seed": "npx sequelize-cli db:seed:all",
-    "build": "node build.js"
+    "build": "node build.js",
+    "postdeploy": "npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all"
   },
   "keywords": [],
   "author": "",
