@@ -28,7 +28,10 @@
             resultDiv.classList.add('hidden');
             resultJson.textContent = 'Загрузка...';
 
-            fetch('https://lab5-jwt-auth-1.onrender.com')
+            fetch('https://lab5-jwt-auth-1.onrender.com',
+            {
+            timeout: 60000  
+            })
                 .then(response => {
                     statusMessage.textContent = `Статус: ${response.status} ${response.statusText}`;
                     return response.json();
