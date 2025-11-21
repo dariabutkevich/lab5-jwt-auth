@@ -133,9 +133,9 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 permissions:
-  contents: read    # Для checkout кода
-  pages: write      # Для деплоя на GitHub Pages
-  id-token: write   # Для OIDC-токена
+  contents: read   
+  pages: write    
+  id-token: write  
 jobs:
   # 1. Сборка и Юнит-тесты (CI, до staging)
   build_and_unit_tests:
@@ -165,7 +165,7 @@ jobs:
           name: github-pages
           path: public/**
   
-  # 2. Деплой на staging (нуждается в unit-тестах)
+  # 2. Деплой на staging 
   staging_deploy:
     name: Deploy to Staging
     needs: build_and_unit_tests
@@ -187,19 +187,17 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: github-pages
   
-  # 3. Интеграционные тесты (после staging, дополнительное тестирование)
+  # 3. Интеграционные тесты (после staging)
   integration_tests:
     name: Integration Tests (Post-Staging)
-    needs: staging_deploy  # Зависит от staging
+    needs: staging_deploy  
     runs-on: ubuntu-latest
-    # Переменные для тестовой БД
     env:
       DB_NAME: test_lab5db_test
       DB_USER: postgres
       DB_PASS: 12465067
       DB_HOST: localhost
       DB_PORT: 5432
-    # Postgres сервис для integration
     services:
       postgres:
         image: postgres:13
@@ -232,12 +230,13 @@ jobs:
         run: npm test -- --testPathPattern="integration" --watchAll=false
       
       - name: Run Migrations (if needed)
-        run: npm run migrate  # Или npx sequelize-cli db:migrate, если используешь CLI
-  
-  # 4. Деплой в prod (нуждается в integration тестах)
+        run: npx sequelize-cli db:migrate 
+      - name: Run Seed (if needed)
+        run: npx sequelize-cli db:seed:all
+  # 4. Деплой в prod 
   production_deploy:
     name: Deploy to Production
-    needs: integration_tests  # Теперь зависит от integration
+    needs: integration_tests 
     if: success()
     runs-on: ubuntu-latest
     environment:
