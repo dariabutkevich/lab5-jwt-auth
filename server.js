@@ -73,7 +73,7 @@
 
 const express = require("express");
 const cors = require("cors");
-
+const path = require("path");
 const app = express();
 
 let corsOptions = {
@@ -85,7 +85,7 @@ let corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
+app.use(express.static(path.join(__dirname, '.')));
 const db = require("./app/models");
 const Role = db.role;
 
