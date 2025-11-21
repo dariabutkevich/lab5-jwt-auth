@@ -149,6 +149,8 @@ jest.mock('nodemailer', () => ({
       await db.sequelize.sync({ force: true });
       console.log('DB dropped and synced for tests');
     
+      await db.role.destroy({ where: {} });  // Truncate roles
+      
       // Create roles
       const Role = db.role;
       await Role.create({ id: 1, name: "user" });
