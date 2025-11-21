@@ -103,7 +103,6 @@
 
 
 
-// SAMOST' ПЕРВАЯ СТРОКА: Mock nodemailer (hoisted by Jest, applies before any require)
 jest.mock('nodemailer', () => ({
     createTransport: jest.fn(() => ({
       sendMail: jest.fn().mockResolvedValue({ messageId: 'test-mock-id' })  // Fake success, no real email
@@ -116,77 +115,26 @@ jest.mock('nodemailer', () => ({
   
   let server;
   describe('Auth Controller Integration Tests', () => {
-    // beforeAll(async () => {
-    //   // Disable Sequelize logs (убирает "Executing" spam)
-    //   const originalLog = db.sequelize.options.logging;
-    //   db.sequelize.options.logging = false;
-  
-    //   // Drop all tables + sync (чистая БД для тестов)
-    //   await db.sequelize.drop();  // Дропает всё
-    //   await db.sequelize.sync({ force: true });  // Пересоздаёт
-    //   console.log('DB dropped and synced for tests');
-  
-    //   // Create roles
-    //   const Role = db.role;
-    //   await Role.create({ id: 1, name: "user" });
-    //   await Role.create({ id: 2, name: "admin" });
-  
-    //   // Start server
-    //   server = app.listen(0, 'localhost', () => {
-    //     console.log('Test server started');
-    //   });
-  
-    //   // Restore logging
-    //   db.sequelize.options.logging = originalLog;
-    // });
 
   beforeAll(async () => {
-      // Disable ALL Sequelize logging (убирает "Executing" spam)
-      db.sequelize.options.logging = false;  // Глобально для этого sequelize instance
+      db.sequelize.options.logging = false;  
     
-      // Drop + sync (чистая БД)
       await db.sequelize.drop();
       await db.sequelize.sync({ force: true });
       console.log('DB dropped and synced for tests');
     
-      await db.role.destroy({ where: {} });  // Truncate roles
-      
-      // Create roles
+      await db.role.destroy({ where: {} });  
+
       const Role = db.role;
       await Role.create({ id: 1, name: "user" });
       await Role.create({ id: 2, name: "admin" });
     
-      // Start server
       server = app.listen(0, 'localhost', () => {
         console.log('Test server started');
       });
   });
 
-  // beforeAll(async () => {
-  //   // Suppress Sequelize logs in tests (убирает "Executing" spam)
-  //   const originalLog = db.sequelize.options.logging;
-  //   db.sequelize.options.logging = false;  // Выключаем логи SQL
-  
-  //   // Sync с alter: true (обновляет схему, не стирает таблицы — решает "relation exists")
-  //   await db.sequelize.sync({ alter: true });
-  //   console.log('DB synced for tests');
-  
-  //   // Create roles
-  //   const Role = db.role;
-  //   await Role.create({ id: 1, name: "user" });
-  //   await Role.create({ id: 2, name: "admin" });
-  
-  //   // Restore logs
-  //   db.sequelize.options.logging = originalLog;
-  // });
-  
-  // afterAll — увеличь timeout
-  // afterAll(async () => {
-  //   await new Promise(resolve => server.close(resolve));
-  //   await db.sequelize.close();
-  // }, 15000);  // 15s timeout
   afterAll(async () => {
-      // Close server and DB (увеличь timeout)
       if (server) {
         await new Promise(resolve => server.close(resolve));
       }
@@ -201,9 +149,8 @@ jest.mock('nodemailer', () => ({
       password: '12345678'
     };
   
-    // Опциональный дебаг-тест: Проверить, что мок работает
     it('should mock nodemailer correctly', () => {
-      const nodemailer = require('nodemailer');  // Require здесь для теста
+      const nodemailer = require('nodemailer');  
       expect(nodemailer.createTransport).toBeDefined();
       expect(typeof nodemailer.createTransport).toBe('function');
       expect(nodemailer.createTransport().sendMail).toBeDefined();

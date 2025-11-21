@@ -1,22 +1,19 @@
 const path = require('path');
 
-// Mock nodemailer FIRST (hoisted, stops async log)
 jest.mock('nodemailer', () => ({
   createTransport: jest.fn(() => ({
     sendMail: jest.fn().mockResolvedValue({ messageId: 'test-mock-id' })
   }))
 }));
 
-// Моки перед require
 jest.mock('bcryptjs');
 jest.mock('jsonwebtoken');
 
-// Inline mock for models/index.js (absolute path)
 jest.mock(jest.requireActual('path').resolve(__dirname, '../../app/models'), () => ({
   user: { create: jest.fn(), findOne: jest.fn() },
   role: { findAll: jest.fn() },
   refreshToken: { findOne: jest.fn(), createToken: jest.fn(), verifyExpiration: jest.fn() },
-  Sequelize: { Op: { or: Symbol('or') } }  // Mock Op.or
+  Sequelize: { Op: { or: Symbol('or') } } 
 }));
 
 const bcrypt = require('bcryptjs');
@@ -44,7 +41,6 @@ describe('Auth Controller Unit Tests', () => {
     };
     mockRoles = [{ name: 'user' }];
 
-    // Reset mocks in each test
     const db = require(path.resolve(__dirname, '../../app/models'));
     db.user.create.mockReset();
     db.user.findOne.mockReset();
