@@ -123,6 +123,7 @@
 #           token: ${{ secrets.GITHUB_TOKEN }}
 #           artifact_name: github-pages #target_directory: public
 
+
 name: CI/CD Pipeline
 on:
   push:
@@ -132,9 +133,9 @@ on:
     types: [opened, synchronize, reopened]
   workflow_dispatch:
 permissions:
-  contents: read    # Для checkout кода
-  pages: write      # Для деплоя на GitHub Pages
-  id-token: write   # Для OIDC-токена
+  contents: read
+  pages: write
+  id-token: write
 jobs:
   # 1. Сборка и Юнит-тесты (CI, до staging)
   build_and_unit_tests:
@@ -186,12 +187,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: github-pages
       
-      # Deploy backend to staging Render
-      - name: Deploy Backend to Staging (Render)
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: [srv-d4bo6m9r0fns73aoijt0]  
-          api-key: ${{ secrets.RENDER_API_KEY }}
+      - name: Deploy Backend to Staging (Hook)
+        run: curl -X POST https://api.render.com/deploy/srv-d4bo6m9r0fns73aoijt0?key=6EqkUxl2gWk
+
+      # - name: Deploy Backend to Staging (Render)
+      #   uses: johnbeynon/render-deploy-action@v0.0.8
+      #   with:
+      #     service-id: srv-[staging-id]  # Замени на реальный srv-... из Render staging
+      #     api-key: ${{ secrets.RENDER_API_KEY }}
   
   # 3. Интеграционные тесты (после staging)
   integration_tests:
@@ -258,11 +261,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: github-pages
       
-      - name: Deploy Backend to Production (Render)
-        uses: johnbeynon/render-deploy-action@v0.0.8
-        with:
-          service-id: [srv-d4gbvvfgi27c73d2hmcg]  
-          api-key: ${{ secrets.RENDER_API_KEY }}
+      - name: Deploy Backend to Production (Hook)
+        run: curl -X POST https://api.render.com/deploy/srv-d4gbvvfgi27c73d2hmcg?key=nIaHydjksf4
+
+      # - name: Deploy Backend to Production (Render)
+      #   uses: johnbeynon/render-deploy-action@v0.0.8
+      #   with:
+      #     service-id: srv-[prod-id]  # Замени на реальный srv-... из Render prod
+      #     api-key: ${{ secrets.RENDER_API_KEY }}
 
 # name: CI/CD Pipeline
 # on:
