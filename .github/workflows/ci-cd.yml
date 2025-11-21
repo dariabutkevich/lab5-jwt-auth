@@ -186,6 +186,11 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: github-pages
+      - name: Deploy Backend to Staging (Render)
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: [srv-d4bo6m9r0fns73aoijt0] 
+          api-key: ${{ secrets.RENDER_API_KEY }}
   
   # 3. Интеграционные тесты (после staging)
   integration_tests:
@@ -255,3 +260,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: github-pages
+      - name: Deploy Backend to Production (Render)
+        uses: johnbeynon/render-deploy-action@v0.0.8
+        with:
+          service-id: [srv-d4gbvvfgi27c73d2hmcg] 
+          api-key: ${{ secrets.RENDER_API_KEY }}
