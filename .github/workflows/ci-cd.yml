@@ -258,7 +258,6 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           artifact_name: github-pages
       
-      # Deploy backend to prod Render
       - name: Deploy Backend to Production (Render)
         uses: johnbeynon/render-deploy-action@v0.0.8
         with:
