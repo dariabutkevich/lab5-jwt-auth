@@ -221,7 +221,7 @@ jobs:
       postgres:
         image: postgres:13
         env:
-          POSTGRES_PASSWORD: ${{ env.DB_PASS }}
+          POSTGRES_PASSWORD: ${{ env.DB_PASSWORD }}
           POSTGRES_DB: ${{ env.DB_NAME }}
         ports:
           - 5432:5432
