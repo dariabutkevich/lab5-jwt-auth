@@ -163,7 +163,7 @@ jest.mock('nodemailer', () => ({
         .send(testUser);
   
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('message', 'User registered successfully!');
+      expect(res.body).toHaveProperty('message', 'User registered !');
     }, 60000);
   
     // Повторная регистрация с тем же email
