@@ -12,9 +12,11 @@ app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req, res) => {
-  res.json({ message: "Test lab 5!" });
-});
+app.use(express.static(path.join(__dirname, '.')));
+
+// app.get("/", (req, res) => {
+//   res.json({ message: "Test lab 5!" });
+// });
 
 app.get("/api/", (req, res) => {
   res.json({ message: "Test lab 5 API!", timestamp: new Date().toISOString() });
@@ -23,10 +25,10 @@ app.get("/api/", (req, res) => {
 require('./app/routes/auth.routes')(app);
 require('./app/routes/user.routes')(app);
 
-app.use(express.static(path.join(__dirname, '.')));
+
 
 app.get('*', (req, res) => {
-  if (req.path.startsWith('/api/')) return;  
+  // if (req.path.startsWith('/api/')) return;  
   res.sendFile(path.join(__dirname, 'index.html'));
 });
 
