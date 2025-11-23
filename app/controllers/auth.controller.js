@@ -184,6 +184,7 @@
 //     return res.status(500).send({ message: err.message });
 //   }
 // };
+
 require('dotenv').config();
 
 const db = require("../models");
@@ -327,8 +328,8 @@ exports.signin = async (req, res) => {
       // 4. Генерируем Refresh Token
       const refreshToken = await db.refreshToken.createToken(user); 
       
-      // 5. УВЕДОМЛЕНИЕ: Ждем отправки уведомления, прежде чем отправить ответ
-      await sendLoginNotification(user.email, 'успешный вход в систему');
+      // 5. УВЕДОМЛЕНИЕ: Больше не ждем (убран 'await'), чтобы не блокировать ответ API при таймауте почты.
+      sendLoginNotification(user.email, 'успешный вход в систему');
 
       // 6. Получаем роли
       const roles = await user.getRoles();
@@ -386,7 +387,8 @@ exports.refreshToken = async (req, res) => {
 
     const newRefreshToken = await db.refreshToken.createToken(user);
 
-    await sendLoginNotification(user.email, 'обновлении токенов');
+    // УВЕДОМЛЕНИЕ: Больше не ждем (убран 'await'), чтобы не блокировать ответ API при таймауте почты.
+    sendLoginNotification(user.email, 'обновлении токенов');
 
     return res.status(200).json({
       accessToken: newAccessToken,
