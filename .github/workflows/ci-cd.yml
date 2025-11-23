@@ -181,12 +181,12 @@ jobs:
           name: github-pages
           path: .
       
-      - name: Deploy to GitHub Pages (Staging)
-        id: deployment
-        uses: actions/deploy-pages@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          artifact_name: github-pages
+      # - name: Deploy to GitHub Pages (Staging)
+      #   id: deployment
+      #   uses: actions/deploy-pages@v4
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     artifact_name: github-pages
       
       - name: Inject Staging Backend URL
         run: sed -i 's|REPLACE_API_URL|https://lab5-jwt-auth-1.onrender.com/api|g' index.html
