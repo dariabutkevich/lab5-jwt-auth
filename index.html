@@ -31,10 +31,13 @@
             timeout: 60000  
             })
                 .then(response => {
-                    return response.text();
+                    statusMessage.textContent = `Статус: ${response.status} ${response.statusText}`;
+                    return response.json();  // <-- json() для парсинга JSON
+                    // return response.text();
                 })
                 .then(data => {
-                    resultJson.textContent = data;
+                    resultJson.textContent = JSON.stringify(data, null, 2);
+                    // resultJson.textContent = data;
                 })
                 .catch(error => {
                     statusMessage.textContent = `Ошибка: ${error.message}`;

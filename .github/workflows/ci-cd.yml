@@ -189,7 +189,7 @@ jobs:
           artifact_name: github-pages
       
       - name: Inject Staging Backend URL
-        run: sed -i 's|REPLACE_API_URL|https://lab5-jwt-auth-1.onrender.com|g' index.html
+        run: sed -i 's|REPLACE_API_URL|https://lab5-jwt-auth-1.onrender.com/api|g' index.html
 
       - name: Deploy Frontend to Render (Staging)
         uses: johnbeynon/render-deploy-action@v0.0.8
@@ -273,7 +273,7 @@ jobs:
           artifact_name: github-pages
       
       - name: Inject Production Backend URL
-        run: sed -i 's|REPLACE_API_URL|https://lab5-jwt-auth-prod.onrender.com|g' index.html
+        run: sed -i 's|REPLACE_API_URL|https://lab5-jwt-auth-prod.onrender.com/api|g' index.html
 
       - name: Deploy Frontend to Render (Production)
         uses: johnbeynon/render-deploy-action@v0.0.8

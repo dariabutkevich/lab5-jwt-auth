@@ -49,7 +49,7 @@ const Role = db.role;
 //   console.log('Production mode: DB connected without sync (use migrations)');
 // }
 
-app.get("/", (req, res) => {
+app.get("/api", (req, res) => {
   res.json({ message: "Test lab 5!" });
   // res.send('Lab 5 data.123');
 });
