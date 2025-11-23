@@ -4,6 +4,7 @@
   "description": "",
   "main": "server.js",
   "scripts": {
+    "serve": "node server.js",
     "start": "npm run postdeploy && npm run serve",
     "test": "npx cross-env NODE_ENV=test npx jest --config jest.config.js --runInBand --detectOpenHandles --silent",
     "test:unit": "npx cross-env NODE_ENV=test npx jest tests/unit --config jest.config.js",
