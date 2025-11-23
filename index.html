@@ -10,9 +10,9 @@
 <body>
     <!-- <button id="check-api">click to show data</button>
     <h1></h1> -->
-    <p id="status-message" >Нажмите, чтобы проверить статус API 21.11.</p>
+    <p id="status-message" >Нажмите 21.11.</p>
 
-    <button id="check-api"> Проверить API (порт 8080)</button>
+    <button id="check-api"> Проверить</button>
     
     <div id="api-result" >
         <h2 >Ответ сервера:</h2>
@@ -20,12 +20,10 @@
     </div>
     <script>
         document.querySelector('#check-api').addEventListener('click', () => {
-            const resultDiv = document.querySelector('#api-result');
             const resultJson = document.querySelector('#result-json');
             const statusMessage = document.querySelector('#status-message');
 
-            statusMessage.textContent = 'Подключение к API...';
-            resultDiv.classList.add('hidden');
+            statusMessage.textContent = 'Подключение...';
             resultJson.textContent = 'Загрузка...';
 
             fetch('https://lab5-jwt-auth-1.onrender.com',
@@ -33,17 +31,13 @@
             timeout: 60000  
             })
                 .then(response => {
-                    statusMessage.textContent = `Статус: ${response.status} ${response.statusText}`;
-                    return response.json();
+                    return response.text();
                 })
                 .then(data => {
-                    resultJson.textContent = JSON.stringify(data, null, 2);
-                    resultDiv.classList.remove('hidden');
+                    resultJson.textContent = data;
                 })
                 .catch(error => {
-                    statusMessage.textContent = `Ошибка: Не удалось подключиться к API. Убедитесь, что сервер Node.js запущен на http://localhost:8080.`;
-                    resultJson.textContent = JSON.stringify({ error: error.message, details: 'API недоступно.' }, null, 2);
-                    resultDiv.classList.remove('hidden');
+                    statusMessage.textContent = `Ошибка: ${error.message}`;
                 });
         });
     </script>

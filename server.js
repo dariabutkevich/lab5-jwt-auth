@@ -54,7 +54,8 @@ const Role = db.role;
 // }
 
 app.get("/", (req, res) => {
-  res.json({ message: "Test lab 5!" });
+  // res.json({ message: "Test lab 5!" });
+  res.send('Lab 5 data.123');
 });
 
 require('./app/routes/auth.routes')(app);
