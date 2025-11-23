@@ -11,7 +11,19 @@ let corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-// app.use(express.static(path.join(__dirname, '.')));
+
+app.get("/", (req, res) => {
+  res.json({ message: "Test lab 5!" });
+});
+
+app.get("/api/", (req, res) => {
+  res.json({ message: "Test lab 5 API!", timestamp: new Date().toISOString() });
+});
+
+require('./app/routes/auth.routes')(app);
+require('./app/routes/user.routes')(app);
+
+app.use(express.static(path.join(__dirname, '.')));
 
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) return;  
@@ -49,13 +61,12 @@ const Role = db.role;
 //   console.log('Production mode: DB connected without sync (use migrations)');
 // }
 
-app.get("/api", (req, res) => {
-  res.json({ message: "Test lab 5!" });
-  // res.send('Lab 5 data.123');
-});
+// app.get("/api", (req, res) => {
+//   res.json({ message: "Test lab 5!" });
+//   // res.send('Lab 5 data.123');
+// });
 
-require('./app/routes/auth.routes')(app);
-require('./app/routes/user.routes')(app);
+
 
 app.use((err, req, res, next) => {
   console.error('Server Error:', err.stack); 
