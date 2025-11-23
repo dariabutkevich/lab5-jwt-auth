@@ -11,7 +11,7 @@ let corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, '.')));
+// app.use(express.static(path.join(__dirname, '.')));
 
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api/')) return;  
