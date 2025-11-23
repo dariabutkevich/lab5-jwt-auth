@@ -265,12 +265,12 @@ jobs:
           name: github-pages
           path: .
       
-      - name: Deploy to GitHub Pages (Production)
-        id: deployment
-        uses: actions/deploy-pages@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          artifact_name: github-pages
+      # - name: Deploy to GitHub Pages (Production)
+      #   id: deployment
+      #   uses: actions/deploy-pages@v4
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     artifact_name: github-pages
       
       - name: Inject Production Backend URL
         run: sed -i 's|REPLACE_API_URL|https://lab5-jwt-auth-prod.onrender.com/api|g' index.html
