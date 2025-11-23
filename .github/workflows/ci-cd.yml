@@ -214,7 +214,7 @@ jobs:
     env:
       DB_NAME: test_lab5db_test
       DB_USER: postgres
-      DB_PASS: 12465067
+      DB_PASSWORD: 12465067
       DB_HOST: localhost
       DB_PORT: 5432
     services:
