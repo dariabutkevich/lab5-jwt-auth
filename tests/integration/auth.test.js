@@ -163,11 +163,11 @@ jest.mock('nodemailer', () => ({
         .send(testUser);
   
       expect(res.statusCode).toBe(200);
-      expect(res.body).toHaveProperty('message', 'User registered !');
+      expect(res.body).toHaveProperty('message', 'User registered successfully!');
     }, 60000);
   
     // Повторная регистрация с тем же email
-    it('POST /api/auth/signup — should return 400 on duplicate email', async () => {
+    it('POST /api/auth/signup — should return 400 on duplicate ', async () => {
       const res = await request(server)
         .post('/api/auth/signup')
         .send(testUser);
