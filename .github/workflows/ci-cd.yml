@@ -163,7 +163,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
-          path: public/**
+          path: index.html #public/**
   
   # 2. Деплой на staging (фронт + бэк)
   staging_deploy:
@@ -196,6 +196,7 @@ jobs:
         with:
           service-id: ${{ secrets.RENDER_FRONTEND_STAGING_ID }} 
           api-key: ${{ secrets.RENDER_API_KEY }}
+          root-dir: .
 
       - name: Deploy Backend to Staging (Hook)
         run: curl -X POST https://api.render.com/deploy/srv-d4bo6m9r0fns73aoijt0?key=6EqkUxl2gWk
@@ -283,7 +284,7 @@ jobs:
 
       - name: Deploy Backend to Production (Hook)
         run: curl -X POST https://api.render.com/deploy/srv-d4gbvvfgi27c73d2hmcg?key=nIaHydjksf4
-
+        root-dir: .
       # - name: Deploy Backend to Production (Render)
       #   uses: johnbeynon/render-deploy-action@v0.0.8
       #   with:
