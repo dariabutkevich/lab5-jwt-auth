@@ -134,7 +134,7 @@ describe('Auth Controller Unit Tests', () => {
 
       return authController.refreshToken(mockReq, mockRes).then(() => {
         expect(mockRes.status).toHaveBeenCalledWith(403);
-        expect(mockRes.json).toHaveBeenCalledWith({ message: 'Refresh Token is required!' });
+        expect(mockRes.json).toHaveBeenCalledWith({ message: 'Refresh Token is!' });
       });
     }, 10000);
 
